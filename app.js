@@ -6,6 +6,7 @@ const
   mongoose = require('mongoose'),
   passport = require('passport'),
   LocalStrategy = require('passport-local'),
+  methodOverride = require('method-override'),
   seedDB = require('./seeds'),
   Campground = require('./models/campground'),
   Comment = require('./models/comment'),
@@ -18,12 +19,13 @@ const
   indexRoutes = require('./routes/index');
 
 // DELETE DATABASE AND LOAD SEED DATA
-// seedDB();
+seedDB();
 
 // APP CONFIG
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.use(express.static('public'));
+app.use(methodOverride("_method"));
 
 // PASSPORT CONFIG
 app.use(require("express-session")({

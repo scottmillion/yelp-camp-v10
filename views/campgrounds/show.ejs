@@ -28,8 +28,16 @@
         <p>
           <em>Submitted by <%= campground.author.username %></em>
         </p>
+        <div class=" d-flex justify-content-end" id="button-group">
+          <a href="/campgrounds" class="btn btn-success mr-2">Back</a>
+          <a href="<%= campground.id %>/edit" class="btn btn-warning mr-2">Edit</a>
+          <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST" id="delete-form">
+            <button class="btn btn-danger">Delete</button>
+          </form>
+
+        </div>
       </div>
-      <p class="text-right  pr-3"><a href="/campgrounds" class="btn btn-success  ">Back</a></p>
+
     </div>
     <div class="card mt-4 " style="background-color:#edebeb">
       <div class="text-right mt-3 mr-3">

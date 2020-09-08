@@ -1,7 +1,8 @@
 const
   express = require('express'),
   router = express.Router(),
-  Campground = require("../models/campground");
+  Campground = require("../models/campground"),
+  Comment = require("../models/comment");
 
 // CAMPGROUND INDEX
 router.get("/", (req, res) => {
@@ -16,7 +17,7 @@ router.get("/", (req, res) => {
 });
 
 // CAMPGROUND CREATE 
-router.post("/", (req, res) => {
+router.post("/", isLoggedIn, (req, res) => {
   const name = req.body.name;
   const image = req.body.image;
   const description = req.body.description;
@@ -40,13 +41,53 @@ router.get("/new", isLoggedIn, (req, res) => {
 });
 
 // CAMPGROUND SHOW 
-router.get("/:id", isLoggedIn, (req, res) => {
+router.get("/:id", (req, res) => {
   Campground.findById(req.params.id).populate("comments").exec((err, foundCampground) => {
     if (err) {
       console.log(err);
     } else {
       res.render("campgrounds/show", { campground: foundCampground });
     }
+  });
+});
+
+// CAMPGROUND EDIT
+
+router.get("/:id/edit", (req, res) => {
+  Campground.findById(req.params.id, (err, foundCampground) => {
+    if (err) {
+      console.log(err);
+    }
+    res.render("campgrounds/edit", { campground: foundCampground });
+  });
+});
+
+// CAMPGROUND UPDATE
+router.put("/:id", (req, res) => {
+  Campground.findByIdAndUpdate(req.params.id, req.body.campground, (err, updatedCampground) => {
+    if (err) {
+      console.log(err);
+      res.redirect("/campgrounds");
+    } else {
+      console.log("Updated:", updatedCampground);
+      res.redirect("/campgrounds/" + req.params.id);
+    }
+  });
+});
+
+// CAMPGROUND DESTROY
+router.delete("/:id", (req, res) => {
+  Campground.findByIdAndDelete(req.params.id, (err, campgroundRemoved) => {
+    if (err) {
+      console.log(err);
+      res.redirect("/campgrounds");
+    }
+    Comment.deleteMany({ _id: { $in: campgroundRemoved.comments } }, (err) => {
+      if (err) {
+        console.log(err);
+      }
+      res.redirect("/campgrounds");
+    });
   });
 });
 
