@@ -53,17 +53,14 @@ router.get("/:id", (req, res) => {
 
 // CAMPGROUND EDIT
 
-router.get("/:id/edit", (req, res) => {
+router.get("/:id/edit", checkCampgroundOwnership, (req, res) => {
   Campground.findById(req.params.id, (err, foundCampground) => {
-    if (err) {
-      console.log(err);
-    }
     res.render("campgrounds/edit", { campground: foundCampground });
-  });
+  })
 });
 
 // CAMPGROUND UPDATE
-router.put("/:id", (req, res) => {
+router.put("/:id", checkCampgroundOwnership, (req, res) => {
   Campground.findByIdAndUpdate(req.params.id, req.body.campground, (err, updatedCampground) => {
     if (err) {
       console.log(err);
@@ -76,7 +73,7 @@ router.put("/:id", (req, res) => {
 });
 
 // CAMPGROUND DESTROY
-router.delete("/:id", (req, res) => {
+router.delete("/:id", checkCampgroundOwnership, (req, res) => {
   Campground.findByIdAndDelete(req.params.id, (err, campgroundRemoved) => {
     if (err) {
       console.log(err);
@@ -96,6 +93,26 @@ function isLoggedIn(req, res, next) {
     return next();
   }
   res.redirect("/login");
+}
+
+function checkCampgroundOwnership(req, res, next) {
+  if (req.isAuthenticated()) {
+    Campground.findById(req.params.id, (err, foundCampground) => {
+      if (err) {
+        res.redirect("back");
+      } else {
+        // We use .equals() method from mongoose because foundCampground.author.id is an object and req.user._id is a string, so we can't use ===.
+        if (foundCampground.author.id.equals(req.user._id)) {
+          next();
+        } else {
+          res.redirect("back");
+        }
+      }
+    });
+
+  } else {
+    res.redirect("back"); // takes them to previous page they were on.
+  }
 }
 
 

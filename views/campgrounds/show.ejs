@@ -30,11 +30,12 @@
         </p>
         <div class=" d-flex justify-content-end" id="button-group">
           <a href="/campgrounds" class="btn btn-success mr-2">Back</a>
+          <% if(currentUser && campground.author.id.equals(currentUser._id)) { %>
           <a href="<%= campground.id %>/edit" class="btn btn-warning mr-2">Edit</a>
           <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST" id="delete-form">
             <button class="btn btn-danger">Delete</button>
           </form>
-
+          <% } %>
         </div>
       </div>
 
