@@ -31,7 +31,7 @@
         <div class=" d-flex justify-content-end" id="button-group">
           <a href="/campgrounds" class="btn btn-success mr-2">Back</a>
           <% if(currentUser && campground.author.id.equals(currentUser._id)) { %>
-          <a href="<%= campground.id %>/edit" class="btn btn-warning mr-2">Edit</a>
+          <a href="/campgrounds/<%= campground.id %>/edit" class="btn btn-warning mr-2">Edit</a>
           <form action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST" id="delete-form">
             <button class="btn btn-danger">Delete</button>
           </form>
@@ -48,13 +48,27 @@
       <hr class="mb-0">
       <div class="card-body ">
         <% campground.comments.forEach((comment) => { %>
-        <div class="float-right">10 Days Ago</div>
+        <div class="float-right pt-2">10 Days Ago</div>
         <p class="pl-1 mb-2 lead">
           <%= comment.author.username %>
         </p>
-        <p class="bg-white p-3 border rounded mb-4">
-          <%= comment.text %>
-        </p>
+        <div class="bg-white p-3 border rounded mb-4">
+          <%= comment.text %><br>
+
+          <% if(currentUser && comment.author.id.equals(currentUser._id)) { %>
+          <a href="/campgrounds/<%= campground.id %>/comments/<%= comment._id %>/edit"
+            class="btn btn-warning btn-sm mt-2">Edit</a>
+          <form action="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>?_method=DELETE" method="POST"
+            id="delete-form">
+            <input type="submit" class="btn btn-danger btn-sm ml-1 mt-2" value="Delete">
+          </form>
+          <% } %>
+
+
+
+
+
+        </div>
         <% }); %>
 
       </div>
